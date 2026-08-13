@@ -3,18 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chocolate OS - Sweet Desktop</title>
-    
-    <!-- Tailwind CSS CDN -->
+    <title>Chocolate OS - Sweety Desktop</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome Icons -->
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Google Fonts -->
+
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Tone.js for Web Audio Synth -->
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
 
-    <!-- External Stylesheet -->
     <link rel="stylesheet" href="styless.css">
 
     <script>
@@ -52,13 +50,10 @@
 </head>
 <body class="h-screen w-screen choco-wallpaper text-cream flex flex-col justify-between overflow-hidden relative">
 
-    <!-- DESKTOP WORKSPACE -->
     <div id="desktop" class="relative flex-1 w-full h-full p-6 z-10 overflow-hidden" onclick="closeStartMenu()">
-        
-        <!-- App Shortcuts Grid -->
+
         <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-6 max-w-5xl">
-            
-            <!-- App 1: Cocoa Tycoon -->
+
             <div onclick="openApp('tycoon')" class="group flex flex-col items-center justify-center p-3 rounded-2xl cursor-pointer hover:bg-choco-800/40 transition-all hover:scale-105 active:scale-95 text-center">
                 <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-700 to-choco-950 border border-amber-500/40 flex items-center justify-center text-amber-300 text-2xl shadow-xl group-hover:border-amber-400">
                     <i class="fa-solid fa-industry"></i>
@@ -66,7 +61,6 @@
                 <span class="mt-2 text-xs font-display font-medium text-cream group-hover:text-amber-300">Cocoa Craft</span>
             </div>
 
-            <!-- App 2: Choco Canvas -->
             <div onclick="openApp('paint')" class="group flex flex-col items-center justify-center p-3 rounded-2xl cursor-pointer hover:bg-choco-800/40 transition-all hover:scale-105 active:scale-95 text-center">
                 <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-600 to-rose-950 border border-rose-500/40 flex items-center justify-center text-rose-300 text-2xl shadow-xl group-hover:border-rose-400">
                     <i class="fa-solid fa-palette"></i>
@@ -74,7 +68,6 @@
                 <span class="mt-2 text-xs font-display font-medium text-cream group-hover:text-rose-300">Choco Canvas</span>
             </div>
 
-            <!-- App 3: Lo-Fi Synth Beats -->
             <div onclick="openApp('audio')" class="group flex flex-col items-center justify-center p-3 rounded-2xl cursor-pointer hover:bg-choco-800/40 transition-all hover:scale-105 active:scale-95 text-center">
                 <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-800 to-choco-950 border border-emerald-500/40 flex items-center justify-center text-emerald-300 text-2xl shadow-xl group-hover:border-emerald-400">
                     <i class="fa-solid fa-headphones"></i>
@@ -82,7 +75,6 @@
                 <span class="mt-2 text-xs font-display font-medium text-cream group-hover:text-emerald-300">Lo-Fi Beats</span>
             </div>
 
-            <!-- App 4: Match-3 Game -->
             <div onclick="openApp('match3')" class="group flex flex-col items-center justify-center p-3 rounded-2xl cursor-pointer hover:bg-choco-800/40 transition-all hover:scale-105 active:scale-95 text-center">
                 <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-pink-700 to-choco-950 border border-pink-500/40 flex items-center justify-center text-pink-300 text-2xl shadow-xl group-hover:border-pink-400">
                     <i class="fa-solid fa-shapes"></i>
@@ -90,7 +82,6 @@
                 <span class="mt-2 text-xs font-display font-medium text-cream group-hover:text-pink-300">Choco Swap</span>
             </div>
 
-            <!-- App 5: Recipes Scratchpad -->
             <div onclick="openApp('notes')" class="group flex flex-col items-center justify-center p-3 rounded-2xl cursor-pointer hover:bg-choco-800/40 transition-all hover:scale-105 active:scale-95 text-center">
                 <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-yellow-700 to-choco-950 border border-yellow-500/40 flex items-center justify-center text-yellow-300 text-2xl shadow-xl group-hover:border-yellow-400">
                     <i class="fa-solid fa-book-open"></i>
@@ -98,7 +89,6 @@
                 <span class="mt-2 text-xs font-display font-medium text-cream group-hover:text-yellow-300">Recipes</span>
             </div>
 
-            <!-- App 6: Sweet Calc -->
             <div onclick="openApp('calc')" class="group flex flex-col items-center justify-center p-3 rounded-2xl cursor-pointer hover:bg-choco-800/40 transition-all hover:scale-105 active:scale-95 text-center">
                 <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-700 to-choco-950 border border-orange-500/40 flex items-center justify-center text-orange-300 text-2xl shadow-xl group-hover:border-orange-400">
                     <i class="fa-solid fa-calculator"></i>
@@ -106,7 +96,6 @@
                 <span class="mt-2 text-xs font-display font-medium text-cream group-hover:text-orange-300">Sweet Calc</span>
             </div>
 
-            <!-- App 7: Terminal Shell -->
             <div onclick="openApp('terminal')" class="group flex flex-col items-center justify-center p-3 rounded-2xl cursor-pointer hover:bg-choco-800/40 transition-all hover:scale-105 active:scale-95 text-center">
                 <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-800 to-choco-950 border border-cyan-500/40 flex items-center justify-center text-cyan-300 text-2xl shadow-xl group-hover:border-cyan-400">
                     <i class="fa-solid fa-terminal"></i>
@@ -129,7 +118,7 @@
             </div>
             <div>
                 <h3 class="font-display text-sm font-bold text-cream">Master Chocolatier</h3>
-                <p class="text-[11px] text-amber-300/80 font-mono">choco-os@v3.0.0</p>
+                <p class="text-[11px] text-amber-300/80 font-mono">choco-os</p>
             </div>
         </div>
 
@@ -168,7 +157,6 @@
         </div>
     </div>
 
-    <!-- TASKBAR FOOTER -->
     <footer class="relative z-40 h-14 w-full choco-panel border-t border-amber-500/30 px-4 flex items-center justify-between">
         <div class="flex items-center gap-3">
             <button onclick="toggleStartMenu(event)" class="choco-button px-3.5 py-1.5 rounded-xl flex items-center gap-2 text-xs font-display font-bold text-amber-300">
@@ -186,8 +174,6 @@
         </div>
     </footer>
 
-    <!-- External JavaScript Engine -->
     <script src="script.js"></script>
 </body>
 </html>
-maahi is chutiya
