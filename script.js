@@ -1,7 +1,5 @@
-/* ==========================================================================
-   1. OPERATING SYSTEM STATE & AUDIO SYNTHESIZER
-   ========================================================================== */
-const OS
+
+const OS = 
 {
     activeWindows: {},
     nextZIndex: 100,
@@ -17,12 +15,13 @@ const OS
     matchScore: 0
 };
 
-// Web Audio Synthesizer (Zero External Dependencies)
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-function playAudioTone(freq = 440, type = 'sine', duration = 0.1) {
+function playAudioTone(freq = 440, type = 'sine', duration = 0.1) 
+{
     if (!OS.soundEnabled) return;
-    try {
+    try 
+    {
         if (audioCtx.state === 'suspended') audioCtx.resume();
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
@@ -37,7 +36,8 @@ function playAudioTone(freq = 440, type = 'sine', duration = 0.1) {
     } catch (e) { console.error(e); }
 }
 
-function toggleMute() {
+function toggleMute()
+ {
     OS.soundEnabled = !OS.soundEnabled;
     const btn = document.getElementById('audio-toggle-btn');
     btn.innerHTML = OS.soundEnabled ? 
@@ -45,10 +45,8 @@ function toggleMute() {
         '<i class="fa-solid fa-volume-xmark text-rose-400"></i>';
 }
 
-/* ==========================================================================
-   2. WINDOW MANAGER & APPLICATION DEFINITIONS
-   ========================================================================== */
-const APPS = {
+const APPS = 
+{
     tycoon: { title: 'Cocoa Craft Tycoon', icon: 'fa-industry', color: 'text-amber-400', width: 480, height: 420 },
     paint: { title: 'Choco Canvas Studio', icon: 'fa-palette', color: 'text-rose-400', width: 540, height: 440 },
     audio: { title: 'Lo-Fi Synth Beats', icon: 'fa-headphones', color: 'text-emerald-400', width: 380, height: 340 },
@@ -58,12 +56,14 @@ const APPS = {
     terminal: { title: 'Cocoa Shell CLI', icon: 'fa-terminal', color: 'text-cyan-300', width: 480, height: 340 }
 };
 
-function openApp(appId) {
-    playAudioTone(523.25, 'sine', 0.12); // C5 sound
+function openApp(appId) 
+{
+    playAudioTone(523.25, 'sine', 0.12); 
     const def = APPS[appId];
     if (!def) return;
 
-    if (OS.activeWindows[appId]) {
+    if (OS.activeWindows[appId])
+         {
         bringToFront(appId);
         closeStartMenu();
         return;
@@ -74,8 +74,7 @@ function openApp(appId) {
     win.className = `absolute pointer-events-auto choco-panel rounded-2xl border border-amber-500/40 shadow-2xl flex flex-col overflow-hidden`;
     win.style.width = `${def.width}px`;
     win.style.height = `${def.height}px`;
-    
-    // Stagger position
+  
     const offset = Object.keys(OS.activeWindows).length * 24;
     win.style.left = `${Math.min(window.innerWidth - def.width - 20, 60 + offset)}px`;
     win.style.top = `${Math.min(window.innerHeight - def.height - 60, 50 + offset)}px`;
@@ -107,12 +106,14 @@ function openApp(appId) {
     closeStartMenu();
 }
 
-function bringToFront(appId) {
+function bringToFront(appId) 
+{
     const win = document.getElementById(`win-${appId}`);
     if (win) win.style.zIndex = ++OS.nextZIndex;
 }
 
-function closeApp(appId) {
+function closeApp(appId) 
+{
     playAudioTone(329.63, 'sine', 0.1); // E4 tone
     const win = document.getElementById(`win-${appId}`);
     if (win) win.remove();
@@ -121,9 +122,11 @@ function closeApp(appId) {
     if (tab) tab.remove();
 }
 
-function makeDraggable(win, handle) {
+function makeDraggable(win, handle) 
+{
     let p1 = 0, p2 = 0, p3 = 0, p4 = 0;
-    handle.onmousedown = (e) => {
+    handle.onmousedown = (e) => 
+        {
         p3 = e.clientX;
         p4 = e.clientY;
         document.onmouseup = () => { document.onmouseup = null; document.onmousemove = null; };
@@ -136,7 +139,8 @@ function makeDraggable(win, handle) {
     };
 }
 
-function addTaskbarTab(appId) {
+function addTaskbarTab(appId) 
+{
     const def = APPS[appId];
     const container = document.getElementById('taskbar-apps');
     const tab = document.createElement('button');
@@ -147,24 +151,25 @@ function addTaskbarTab(appId) {
     container.appendChild(tab);
 }
 
-function toggleStartMenu(e) {
+function toggleStartMenu(e) 
+{
     if (e) e.stopPropagation();
     playAudioTone(659.25, 'triangle', 0.08);
     document.getElementById('start-menu').classList.toggle('hidden');
 }
 
-function closeStartMenu() {
+function closeStartMenu() 
+{
     document.getElementById('start-menu').classList.add('hidden');
 }
 
-/* ==========================================================================
-   3. APPLICATION VIEW RENDERERS
-   ========================================================================== */
-function renderAppContent(appId) {
+function renderAppContent(appId) 
+{
     const container = document.getElementById(`content-${appId}`);
     if (!container) return;
 
-    if (appId === 'tycoon') {
+    if (appId === 'tycoon') 
+        {
         container.innerHTML = `
             <div class="flex flex-col h-full justify-between items-center text-center gap-3">
                 <div class="choco-panel p-3 rounded-xl border border-amber-500/30 w-full flex justify-around">
@@ -190,7 +195,9 @@ function renderAppContent(appId) {
                 </div>
             </div>
         `;
-    } else if (appId === 'paint') {
+    }
+     else if (appId === 'paint') 
+        {
         container.innerHTML = `
             <div class="flex flex-col h-full gap-2">
                 <div class="flex gap-2 justify-between items-center bg-choco-900 p-2 rounded-xl border border-choco-700">
@@ -207,7 +214,9 @@ function renderAppContent(appId) {
             </div>
         `;
         setTimeout(initCanvas, 50);
-    } else if (appId === 'audio') {
+    } 
+    else if (appId === 'audio') 
+        {
         container.innerHTML = `
             <div class="flex flex-col h-full items-center justify-center gap-4 text-center">
                 <div class="w-20 h-20 rounded-2xl bg-emerald-950 border border-emerald-500/40 flex items-center justify-center text-emerald-300 text-3xl shadow-xl">
@@ -222,7 +231,9 @@ function renderAppContent(appId) {
                 </div>
             </div>
         `;
-    } else if (appId === 'match3') {
+    }
+     else if (appId === 'match3')
+         {
         container.innerHTML = `
             <div class="flex flex-col h-full items-center justify-between gap-3">
                 <div class="flex justify-between items-center w-full bg-choco-900 p-2 rounded-xl border border-choco-700 font-display text-xs">
@@ -233,7 +244,9 @@ function renderAppContent(appId) {
             </div>
         `;
         setTimeout(initMatchGame, 50);
-    } else if (appId === 'notes') {
+    } 
+    else if (appId === 'notes') 
+        {
         container.innerHTML = `
             <div class="space-y-3">
                 <div class="font-display text-xs text-amber-300 border-b border-choco-700/60 pb-1 flex justify-between items-center">
@@ -248,7 +261,9 @@ function renderAppContent(appId) {
                 `).join('')}
             </div>
         `;
-    } else if (appId === 'calc') {
+    } 
+    else if (appId === 'calc') 
+        {
         container.innerHTML = `
             <div class="flex flex-col h-full justify-between gap-2">
                 <div id="calc-out" class="p-3 bg-choco-950 rounded-xl border border-amber-500/30 text-right font-mono text-xl font-bold text-amber-300">0</div>
@@ -272,7 +287,9 @@ function renderAppContent(appId) {
                 </div>
             </div>
         `;
-    } else if (appId === 'terminal') {
+    } 
+    else if (appId === 'terminal')
+         {
         container.innerHTML = `
             <div class="flex flex-col h-full font-mono text-xs text-cyan-300 gap-2">
                 <div id="term-out" class="flex-1 overflow-auto bg-choco-950/90 p-3 rounded-xl border border-cyan-500/30 space-y-1">
@@ -288,18 +305,17 @@ function renderAppContent(appId) {
     }
 }
 
-/* ==========================================================================
-   4. GAME LOGIC & UTILITIES
-   ========================================================================== */
-// Tycoon Game
-function harvestBean() {
+function harvestBean() 
+{
     playAudioTone(880, 'sine', 0.05);
     OS.coins += 1;
     updateTycoonUI();
 }
 
-function buyRoaster() {
-    if (OS.coins >= 15) {
+function buyRoaster() 
+{
+    if (OS.coins >= 15) 
+        {
         playAudioTone(440, 'triangle', 0.15);
         OS.coins -= 15;
         OS.roasters += 1;
@@ -308,8 +324,10 @@ function buyRoaster() {
     }
 }
 
-function buyGrinder() {
-    if (OS.coins >= 50) {
+function buyGrinder() 
+{
+    if (OS.coins >= 50) 
+        {
         playAudioTone(587.33, 'triangle', 0.15);
         OS.coins -= 50;
         OS.grinders += 1;
@@ -318,7 +336,8 @@ function buyGrinder() {
     }
 }
 
-function updateTycoonUI() {
+function updateTycoonUI() 
+{
     const c = document.getElementById('coin-val');
     const r = document.getElementById('rate-val');
     const rc = document.getElementById('roaster-cnt');
@@ -329,19 +348,22 @@ function updateTycoonUI() {
     if (gc) gc.innerText = OS.grinders;
 }
 
-setInterval(() => {
-    if (OS.coinsPerSec > 0) {
+setInterval(() => 
+    {
+    if (OS.coinsPerSec > 0) 
+        {
         OS.coins += OS.coinsPerSec;
         updateTycoonUI();
     }
 }, 1000);
 
-// Canvas Studio
 let activeColor = '#210f07';
 
-function setPaintColor(col) { activeColor = col; }
+function setPaintColor(col) 
+{ activeColor = col; }
 
-function initCanvas() {
+function initCanvas() 
+{
     const canvas = document.getElementById('paint-canvas');
     if (!canvas) return;
     canvas.width = canvas.parentElement.clientWidth;
@@ -375,18 +397,20 @@ function clearCanvas() {
     }
 }
 
-// Match-3 Game
 const MATCH_ICONS = ['🍫', '🍬', '🍩', '🍪', '🧁'];
-function initMatchGame() {
+function initMatchGame() 
+{
     const grid = document.getElementById('match-grid');
     if (!grid) return;
     grid.innerHTML = '';
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 20; i++) 
+        {
         const btn = document.createElement('button');
         const icon = MATCH_ICONS[Math.floor(Math.random() * MATCH_ICONS.length)];
         btn.className = 'w-14 h-14 bg-choco-800 rounded-xl text-2xl flex items-center justify-center hover:bg-choco-700 active:scale-90 transition-all border border-pink-500/20';
         btn.innerText = icon;
-        btn.onclick = () => {
+        btn.onclick = () => 
+            {
             playAudioTone(783.99, 'sine', 0.1);
             OS.matchScore += 10;
             document.getElementById('match-score').innerText = OS.matchScore;
@@ -396,7 +420,6 @@ function initMatchGame() {
     }
 }
 
-// Calculator
 let calcVal = '0';
 function pressC(val) {
     playAudioTone(440, 'sine', 0.05);
@@ -410,9 +433,10 @@ function pressC(val) {
     if (out) out.innerText = calcVal;
 }
 
-// Terminal Shell
-function handleTerm(e) {
-    if (e.key === 'Enter') {
+function handleTerm(e) 
+{
+    if (e.key === 'Enter')
+        {
         const input = e.target.value.trim().toLowerCase();
         const out = document.getElementById('term-out');
         if (!out) return;
@@ -447,8 +471,8 @@ function handleTerm(e) {
     }
 }
 
-// System Clock
-function updateClock() {
+function updateClock() 
+{
     const now = new Date();
     const timeEl = document.getElementById('taskbar-time');
     if (timeEl) timeEl.innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -456,7 +480,7 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// OS Startup Init
-window.onload = () => {
+window.onload = () => 
+    {
     openApp('tycoon');
 };
