@@ -1,4 +1,3 @@
-
 const OS = 
 {
     activeWindows: {},
@@ -37,19 +36,98 @@ function playAudioTone(freq = 440, type = 'sine', duration = 0.1)
 }
 
 function toggleMute()
- {
+{
     OS.soundEnabled = !OS.soundEnabled;
     const btn = document.getElementById('audio-toggle-btn');
-    btn.innerHTML = OS.soundEnabled ? 
-        '<i class="fa-solid fa-volume-high"></i>' : 
-        '<i class="fa-solid fa-volume-xmark text-rose-400"></i>';
+    if (btn) {
+        btn.innerHTML = OS.soundEnabled ? 
+            '<i class="fa-solid fa-volume-high"></i>' : 
+            '<i class="fa-solid fa-volume-xmark text-rose-400"></i>';
+    }
+    if (!OS.soundEnabled && isPlayingLofi) {
+        toggleLofiBeat();
+    }
+}
+
+// LO-FI SYNTH & BEATS ENGINE
+let isPlayingLofi = false;
+let lofiSynth = null;
+let lofiFilter = null;
+let lofiRepeatEvent = null;
+
+async function toggleLofiBeat() {
+    if (!OS.soundEnabled && !isPlayingLofi) return;
+
+    if (Tone.context.state !== 'running') {
+        await Tone.start();
+    }
+
+    const playBtn = document.getElementById('lofi-play-btn');
+    const disc = document.getElementById('lofi-disc');
+
+    if (isPlayingLofi) {
+        Tone.Transport.stop();
+        if (lofiRepeatEvent !== null) {
+            Tone.Transport.clear(lofiRepeatEvent);
+            lofiRepeatEvent = null;
+        }
+        if (lofiSynth) {
+            lofiSynth.dispose();
+            lofiSynth = null;
+        }
+        if (lofiFilter) {
+            lofiFilter.dispose();
+            lofiFilter = null;
+        }
+        isPlayingLofi = false;
+        if (playBtn) playBtn.innerHTML = '<i class="fa-solid fa-play mr-2"></i>Play Lo-Fi Loop';
+        if (disc) disc.classList.remove('animate-spin');
+        return;
+    }
+
+    lofiFilter = new Tone.Filter({
+        frequency: 800,
+        type: 'lowpass',
+        rolloff: -12
+    }).toDestination();
+
+    lofiSynth = new Tone.PolySynth(Tone.Synth, {
+        oscillator: { type: 'triangle' },
+        envelope: {
+            attack: 0.2,
+            decay: 0.5,
+            sustain: 0.6,
+            release: 1.2
+        }
+    }).connect(lofiFilter);
+    lofiSynth.volume.value = -6;
+
+    const chords = [
+        ['F3', 'A3', 'C4', 'E4'],
+        ['E3', 'G3', 'B3', 'D4'],
+        ['D3', 'F3', 'A3', 'C4'],
+        ['C3', 'E3', 'G3', 'B3']
+    ];
+
+    let step = 0;
+    lofiRepeatEvent = Tone.Transport.scheduleRepeat((time) => {
+        lofiSynth.triggerAttackRelease(chords[step], '2m', time);
+        step = (step + 1) % chords.length;
+    }, '2m');
+
+    Tone.Transport.bpm.value = 75;
+    Tone.Transport.start();
+    isPlayingLofi = true;
+
+    if (playBtn) playBtn.innerHTML = '<i class="fa-solid fa-stop mr-2"></i>Stop Lo-Fi Loop';
+    if (disc) disc.classList.add('animate-spin');
 }
 
 const APPS = 
 {
     tycoon: { title: 'Cocoa Craft Tycoon', icon: 'fa-industry', color: 'text-amber-400', width: 480, height: 420 },
     paint: { title: 'Choco Canvas Studio', icon: 'fa-palette', color: 'text-rose-400', width: 540, height: 440 },
-    audio: { title: 'Lo-Fi Synth Beats', icon: 'fa-headphones', color: 'text-emerald-400', width: 380, height: 340 },
+    audio: { title: 'Lo-Fi Synth Beats', icon: 'fa-headphones', color: 'text-emerald-400', width: 380, height: 360 },
     match3: { title: 'Choco Swap Match-3', icon: 'fa-shapes', color: 'text-pink-400', width: 420, height: 460 },
     notes: { title: 'Recipes & Notes', icon: 'fa-book-open', color: 'text-yellow-400', width: 460, height: 380 },
     calc: { title: 'Sweet Calculator', icon: 'fa-calculator', color: 'text-orange-300', width: 320, height: 400 },
@@ -63,7 +141,7 @@ function openApp(appId)
     if (!def) return;
 
     if (OS.activeWindows[appId])
-         {
+    {
         bringToFront(appId);
         closeStartMenu();
         return;
@@ -114,7 +192,10 @@ function bringToFront(appId)
 
 function closeApp(appId) 
 {
-    playAudioTone(329.63, 'sine', 0.1); // E4 tone
+    playAudioTone(329.63, 'sine', 0.1);
+    if (appId === 'audio' && isPlayingLofi) {
+        toggleLofiBeat();
+    }
     const win = document.getElementById(`win-${appId}`);
     if (win) win.remove();
     delete OS.activeWindows[appId];
@@ -126,7 +207,7 @@ function makeDraggable(win, handle)
 {
     let p1 = 0, p2 = 0, p3 = 0, p4 = 0;
     handle.onmousedown = (e) => 
-        {
+    {
         p3 = e.clientX;
         p4 = e.clientY;
         document.onmouseup = () => { document.onmouseup = null; document.onmousemove = null; };
@@ -169,7 +250,7 @@ function renderAppContent(appId)
     if (!container) return;
 
     if (appId === 'tycoon') 
-        {
+    {
         container.innerHTML = `
             <div class="flex flex-col h-full justify-between items-center text-center gap-3">
                 <div class="choco-panel p-3 rounded-xl border border-amber-500/30 w-full flex justify-around">
@@ -196,8 +277,8 @@ function renderAppContent(appId)
             </div>
         `;
     }
-     else if (appId === 'paint') 
-        {
+    else if (appId === 'paint') 
+    {
         container.innerHTML = `
             <div class="flex flex-col h-full gap-2">
                 <div class="flex gap-2 justify-between items-center bg-choco-900 p-2 rounded-xl border border-choco-700">
@@ -216,24 +297,30 @@ function renderAppContent(appId)
         setTimeout(initCanvas, 50);
     } 
     else if (appId === 'audio') 
-        {
+    {
         container.innerHTML = `
-            <div class="flex flex-col h-full items-center justify-center gap-4 text-center">
-                <div class="w-20 h-20 rounded-2xl bg-emerald-950 border border-emerald-500/40 flex items-center justify-center text-emerald-300 text-3xl shadow-xl">
-                    <i class="fa-solid fa-compact-disc animate-spin"></i>
+            <div class="flex flex-col h-full items-center justify-between gap-4 text-center py-2">
+                <div id="lofi-disc" class="w-20 h-20 rounded-2xl bg-emerald-950 border border-emerald-500/40 flex items-center justify-center text-emerald-300 text-3xl shadow-xl transition-all ${isPlayingLofi ? 'animate-spin' : ''}">
+                    <i class="fa-solid fa-compact-disc"></i>
                 </div>
-                <div class="font-display text-sm text-emerald-200">Chill Cocoa Beats & Synth</div>
+                <div>
+                    <div class="font-display text-sm text-emerald-200">Chill Cocoa Beats & Synth</div>
+                    <div class="text-[11px] text-amber-300/80 font-mono mt-1">BPM: 75 | Key: C Major</div>
+                </div>
+                <button id="lofi-play-btn" onclick="toggleLofiBeat()" class="choco-button w-full py-2.5 rounded-xl font-display text-xs text-emerald-300 flex items-center justify-center">
+                    <i class="fa-solid ${isPlayingLofi ? 'fa-stop' : 'fa-play'} mr-2"></i>${isPlayingLofi ? 'Stop Lo-Fi Loop' : 'Play Lo-Fi Loop'}
+                </button>
                 <div class="grid grid-cols-4 gap-2 w-full">
-                    <button onclick="playAudioTone(261.63, 'sine', 0.4)" class="choco-button py-3 rounded-xl text-xs font-mono text-emerald-300">C4</button>
-                    <button onclick="playAudioTone(329.63, 'sine', 0.4)" class="choco-button py-3 rounded-xl text-xs font-mono text-emerald-300">E4</button>
-                    <button onclick="playAudioTone(392.00, 'sine', 0.4)" class="choco-button py-3 rounded-xl text-xs font-mono text-emerald-300">G4</button>
-                    <button onclick="playAudioTone(523.25, 'sine', 0.4)" class="choco-button py-3 rounded-xl text-xs font-mono text-emerald-300">C5</button>
+                    <button onclick="playAudioTone(261.63, 'sine', 0.4)" class="choco-button py-2 rounded-xl text-xs font-mono text-emerald-300">C4</button>
+                    <button onclick="playAudioTone(329.63, 'sine', 0.4)" class="choco-button py-2 rounded-xl text-xs font-mono text-emerald-300">E4</button>
+                    <button onclick="playAudioTone(392.00, 'sine', 0.4)" class="choco-button py-2 rounded-xl text-xs font-mono text-emerald-300">G4</button>
+                    <button onclick="playAudioTone(523.25, 'sine', 0.4)" class="choco-button py-2 rounded-xl text-xs font-mono text-emerald-300">C5</button>
                 </div>
             </div>
         `;
     }
-     else if (appId === 'match3')
-         {
+    else if (appId === 'match3')
+    {
         container.innerHTML = `
             <div class="flex flex-col h-full items-center justify-between gap-3">
                 <div class="flex justify-between items-center w-full bg-choco-900 p-2 rounded-xl border border-choco-700 font-display text-xs">
@@ -246,7 +333,7 @@ function renderAppContent(appId)
         setTimeout(initMatchGame, 50);
     } 
     else if (appId === 'notes') 
-        {
+    {
         container.innerHTML = `
             <div class="space-y-3">
                 <div class="font-display text-xs text-amber-300 border-b border-choco-700/60 pb-1 flex justify-between items-center">
@@ -263,7 +350,7 @@ function renderAppContent(appId)
         `;
     } 
     else if (appId === 'calc') 
-        {
+    {
         container.innerHTML = `
             <div class="flex flex-col h-full justify-between gap-2">
                 <div id="calc-out" class="p-3 bg-choco-950 rounded-xl border border-amber-500/30 text-right font-mono text-xl font-bold text-amber-300">0</div>
@@ -289,7 +376,7 @@ function renderAppContent(appId)
         `;
     } 
     else if (appId === 'terminal')
-         {
+    {
         container.innerHTML = `
             <div class="flex flex-col h-full font-mono text-xs text-cyan-300 gap-2">
                 <div id="term-out" class="flex-1 overflow-auto bg-choco-950/90 p-3 rounded-xl border border-cyan-500/30 space-y-1">
@@ -315,7 +402,7 @@ function harvestBean()
 function buyRoaster() 
 {
     if (OS.coins >= 15) 
-        {
+    {
         playAudioTone(440, 'triangle', 0.15);
         OS.coins -= 15;
         OS.roasters += 1;
@@ -327,7 +414,7 @@ function buyRoaster()
 function buyGrinder() 
 {
     if (OS.coins >= 50) 
-        {
+    {
         playAudioTone(587.33, 'triangle', 0.15);
         OS.coins -= 50;
         OS.grinders += 1;
@@ -349,9 +436,9 @@ function updateTycoonUI()
 }
 
 setInterval(() => 
-    {
+{
     if (OS.coinsPerSec > 0) 
-        {
+    {
         OS.coins += OS.coinsPerSec;
         updateTycoonUI();
     }
@@ -404,13 +491,13 @@ function initMatchGame()
     if (!grid) return;
     grid.innerHTML = '';
     for (let i = 0; i < 20; i++) 
-        {
+    {
         const btn = document.createElement('button');
         const icon = MATCH_ICONS[Math.floor(Math.random() * MATCH_ICONS.length)];
         btn.className = 'w-14 h-14 bg-choco-800 rounded-xl text-2xl flex items-center justify-center hover:bg-choco-700 active:scale-90 transition-all border border-pink-500/20';
         btn.innerText = icon;
         btn.onclick = () => 
-            {
+        {
             playAudioTone(783.99, 'sine', 0.1);
             OS.matchScore += 10;
             document.getElementById('match-score').innerText = OS.matchScore;
@@ -436,7 +523,7 @@ function pressC(val) {
 function handleTerm(e) 
 {
     if (e.key === 'Enter')
-        {
+    {
         const input = e.target.value.trim().toLowerCase();
         const out = document.getElementById('term-out');
         if (!out) return;
@@ -481,6 +568,6 @@ setInterval(updateClock, 1000);
 updateClock();
 
 window.onload = () => 
-    {
+{
     openApp('tycoon');
 };
